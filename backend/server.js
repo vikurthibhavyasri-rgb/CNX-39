@@ -5,6 +5,10 @@ import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import milestoneRoutes from './routes/milestone.js';
 import chatRoutes from './routes/chat.js';
+import onboardingRoutes from './routes/onboarding.js';
+import notesRoutes from './routes/notes.js';
+import communityRoutes from './routes/community.js';
+import bookingsRoutes from './routes/bookings.js';
 
 const app = express();
 
@@ -16,6 +20,10 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/milestones', milestoneRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/onboarding', onboardingRoutes);
+app.use('/api/notes', notesRoutes);
+app.use('/api/community', communityRoutes);
+app.use('/api/bookings', bookingsRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI)
