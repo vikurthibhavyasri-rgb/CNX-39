@@ -65,19 +65,43 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Secure, single DB lookup across ALL collections
     const user = await User.findOne({ email });
     if (user && (await user.matchPassword(password))) {
       res.json({
         _id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role, // Exposes youth/therapist status securely to Login page
+        role: user.role,
         token: generateToken(user._id)
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Not authorized' });
+
+    const jwt_module = await import('jsonwebtoken');
+    const decoded = jwt_module.default.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    const user = await User.findById(decoded.id).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({
+      name: user.name,
+      role: user.role,
+      onboardingComplete: user.onboardingComplete,
+      primaryCategory: user.primaryCategory,
+      communityTags: user.communityTags,
+      isCrisisRisk: user.isCrisisRisk,
+      xp: user.xp,
+      level: user.level,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

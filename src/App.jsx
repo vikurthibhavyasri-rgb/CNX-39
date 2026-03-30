@@ -3,15 +3,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Moon, Sun, HeartPulse, User, LogOut, ChevronDown } from 'lucide-react';
 import { Toaster } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import MilestoneActivity from './pages/MilestoneActivity';
+import Onboarding from './pages/Onboarding';
+import Notes from './pages/Notes';
+import Community from './pages/Community';
+import TherapistProfile from './pages/TherapistProfile';
 import Logo from './components/Logo';
 import Chatbot from './components/Chatbot';
+import LanguageSelector from './components/LanguageSelector';
 
 export default function App() {
+  const { t } = useTranslation();
   const [darkMode, setDarkMode] = useState(false);
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -61,14 +68,18 @@ export default function App() {
           </Link>
           
           <nav className="hidden md:flex gap-8 text-sm font-medium text-gray-600 dark:text-gray-300">
-            <Link to="/#why-it-matters" className="hover:text-primary-500 transition-colors">Why It Matters</Link>
-            <Link to="/#solutions" className="hover:text-primary-500 transition-colors">Solutions</Link>
-            <Link to="/#how-it-works" className="hover:text-primary-500 transition-colors">How It Works</Link>
-            <Link to="/#impact" className="hover:text-primary-500 transition-colors">Impact</Link>
-            {user && <Link to="/dashboard" className="text-primary-600 dark:text-primary-400 font-bold hover:text-primary-500 transition-colors">Dashboard</Link>}
+            <Link to="/#why-it-matters" className="hover:text-primary-500 transition-colors">{t('navbar.why_it_matters', 'Why It Matters')}</Link>
+            <Link to="/#solutions" className="hover:text-primary-500 transition-colors">{t('navbar.solutions', 'Solutions')}</Link>
+            <Link to="/#how-it-works" className="hover:text-primary-500 transition-colors">{t('navbar.how_it_works', 'How It Works')}</Link>
+            <Link to="/#impact" className="hover:text-primary-500 transition-colors">{t('navbar.impact', 'Impact')}</Link>
+            {user && <Link to="/dashboard" className="text-primary-600 dark:text-primary-400 font-bold hover:text-primary-500 transition-colors">{t('navbar.dashboard')}</Link>}
+            {user && <Link to="/notes" className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors">📔 Journal</Link>}
+            {user && <Link to="/community" className="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors">🌍 Community</Link>}
           </nav>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <LanguageSelector />
+            
             <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkborder/50 text-gray-600 dark:text-gray-300 transition-colors" aria-label="Toggle Dark Mode">
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
@@ -101,7 +112,7 @@ export default function App() {
                       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-darkbg">
                         <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user.name}</p>
                         <p className="text-xs font-medium text-gray-500 dark:text-gray-400 capitalize flex items-center gap-1 mt-0.5">
-                          Logged in as {user.role}
+                          {t('navbar.logged_in_as', 'Logged in as')} {user.role}
                         </p>
                       </div>
                       <div className="p-2">
@@ -109,7 +120,7 @@ export default function App() {
                           onClick={handleLogout}
                           className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors"
                         >
-                          <LogOut size={16} /> Sign Out
+                          <LogOut size={16} /> {t('navbar.logout')}
                         </button>
                       </div>
                     </motion.div>
@@ -119,10 +130,10 @@ export default function App() {
             ) : (
               <>
                 <Link to="/login" className="hidden sm:block text-gray-600 dark:text-gray-300 hover:text-primary-500 font-medium text-sm transition-colors">
-                  Log in
+                  {t('navbar.login')}
                 </Link>
                 <Link to="/signup" className="hidden sm:block bg-primary-600 hover:bg-primary-500 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg shadow-primary-500/30 transition-all transform hover:-translate-y-0.5">
-                  Get Support
+                  {t('hero.get_support')}
                 </Link>
               </>
             )}
@@ -135,7 +146,11 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/notes" element={<Notes />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/therapists/:id" element={<TherapistProfile />} />
           <Route path="/milestone/:type" element={<MilestoneActivity />} />
         </Routes>
       </main>
@@ -150,36 +165,36 @@ export default function App() {
                 <Logo className="text-lg" />
               </div>
               <p className="text-gray-500 dark:text-gray-400 text-sm">
-                A digitally safe sanctuary for adolescent mental wellbeing, connecting youth to the resilience they need.
+                {t('footer.tagline', 'A digitally safe sanctuary for adolescent mental wellbeing, connecting youth to the resilience they need.')}
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 dark:text-white mb-4">Platform</h4>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-4">{t('footer.platform', 'Platform')}</h4>
               <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">About Us</Link></li>
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">Resources</Link></li>
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">Features</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.about', 'About Us')}</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.resources', 'Resources')}</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.features', 'Features')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 dark:text-white mb-4">Community</h4>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-4">{t('footer.community', 'Community')}</h4>
               <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">Partner NGOs</Link></li>
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">Become a Mentor</Link></li>
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">Support Forums</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.ngos', 'Partner NGOs')}</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.mentor', 'Become a Mentor')}</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.forums', 'Support Forums')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 dark:text-white mb-4">Legal</h4>
+              <h4 className="font-bold text-gray-900 dark:text-white mb-4">{t('footer.legal', 'Legal')}</h4>
               <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">Terms of Service</Link></li>
-                <li><Link to="/#" className="hover:text-primary-500 transition-colors">Contact</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.privacy', 'Privacy Policy')}</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.terms', 'Terms of Service')}</Link></li>
+                <li><Link to="/#" className="hover:text-primary-500 transition-colors">{t('footer.contact', 'Contact')}</Link></li>
               </ul>
             </div>
           </div>
           <div className="pt-8 border-t border-gray-100 dark:border-darkborder/50 text-center text-sm text-gray-500 dark:text-gray-400">
-            © {new Date().getFullYear()} Svasthya Digital Wellbeing Platform. All rights reserved.
+            © {new Date().getFullYear()} {t('footer.copyright', 'Svasthya Digital Wellbeing Platform. All rights reserved.')}
           </div>
         </div>
       </footer>
