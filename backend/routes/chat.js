@@ -7,7 +7,11 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
 router.post('/', async (req, res) => {
 
-  const { message, history } = req.body;
+  const { message, history, language } = req.body;
+
+  let languageInstruction = "English";
+  if (language === 'hi') languageInstruction = "Hindi";
+  if (language === 'te') languageInstruction = "Telugu";
 
   // Format history for the raw Google API
   const contents = [];
@@ -21,16 +25,29 @@ router.post('/', async (req, res) => {
   // Add the current message
   contents.push({ role: 'user', parts: [{ text: message }] });
 
-  console.log("Svasthya AI Request - Direct Fetch Method");
+  const systemInstruction = {
+    parts: [{
+      text: `You are Svasthya, an empathetic youth wellbeing companion. 
+      Your goal is to provide supportive, stigma-free guidance for mental health.
+      IMPORTANT: Always respond in ${languageInstruction}. 
+      If the user reaches out in distress, provide grounding exercises and suggest professional help gracefully.`
+    }]
+  };
+
+  console.log(`Svasthya AI Request [Language: ${languageInstruction}]`);
 
   try {
     const API_KEY = process.env.GEMINI_API_KEY;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+    // Using gemini-2.5-flash as the stable model
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents })
+      body: JSON.stringify({
+        contents,
+        systemInstruction
+      })
     });
 
     const data = await response.json();
