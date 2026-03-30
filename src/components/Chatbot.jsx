@@ -43,31 +43,44 @@ export default function Chatbot() {
     return () => window.removeEventListener('svasthya-open-chat', handleOpenChat);
   }, []);
 
-  const handleSend = (e) => {
+  const [isTyping, setIsTyping] = useState(false);
+
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
 
     const userText = input.trim();
-    setMessages((prev) => [...prev, { type: 'user', text: userText }]);
+    const newMessages = [...messages, { type: 'user', text: userText }];
+    setMessages(newMessages);
     setInput('');
+    setIsTyping(true);
 
-    // Simulate AI response logic based on keywords
-    setTimeout(() => {
-      let botResponse = 'I am here to listen. Can you tell me a bit more?';
-      
-      const lowerText = userText.toLowerCase();
-      if (lowerText.includes('anxi') || lowerText.includes('panic') || lowerText.includes('nervous')) {
-        botResponse = 'It sounds like you might be feeling anxious. Try the 4-7-8 method with me: Breathe in for 4 seconds, hold for 7, and exhale slowly for 8. You are safe here.';
-      } else if (lowerText.includes('sad') || lowerText.includes('depress') || lowerText.includes('down')) {
-        botResponse = 'I am so sorry you are feeling down. Remember that these feelings are valid, but they don\'t define you. Have you had drinking water or taken a short walk today? Small steps can help.';
-      } else if (lowerText.includes('stress') || lowerText.includes('overwhelm') || lowerText.includes('exam')) {
-        botResponse = 'Stress can feel very heavy. A quick tip: Write down the top 3 things causing you stress, and just tackle the easiest one first. Sometimes breaking it down is the best remedy.';
-      } else if (lowerText.includes('hello') || lowerText.includes('hi')) {
-        botResponse = 'Hello! How is your day going?';
+    try {
+      // Filter history: Gemini requires the first message to be from 'user'
+      const history = messages
+        .slice(1) // Skip the first default bot greeting
+        .map(m => ({
+          role: m.type === 'bot' ? 'model' : 'user',
+          parts: [{ text: m.text }]
+        }));
+
+      const res = await fetch('http://localhost:5000/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText, history })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessages((prev) => [...prev, { type: 'bot', text: data.text }]);
+      } else {
+        throw new Error(data.error);
       }
-
-      setMessages((prev) => [...prev, { type: 'bot', text: botResponse }]);
-    }, 1200);
+    } catch (err) {
+      setMessages((prev) => [...prev, { type: 'bot', text: err.message || "I'm having a little trouble connecting right now. Please try again soon!" }]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
@@ -117,6 +130,18 @@ export default function Chatbot() {
                   {msg.type === 'bot' ? <BotMessage text={msg.text} /> : <UserMessage text={msg.text} />}
                 </motion.div>
               ))}
+              {isTyping && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2 w-full animate-pulse">
+                  <div className="bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 p-2 rounded-full h-8 w-8 flex-shrink-0 flex items-center justify-center">
+                    <BrainCircuit size={16} className="animate-spin-slow" />
+                  </div>
+                  <div className="bg-gray-100 dark:bg-gray-800 text-gray-500 px-4 py-2 rounded-2xl rounded-tl-sm text-xs flex gap-1">
+                    <span className="dot animate-bounce">.</span>
+                    <span className="dot animate-bounce delay-100">.</span>
+                    <span className="dot animate-bounce delay-200">.</span>
+                  </div>
+                </motion.div>
+              )}
               <div ref={messagesEndRef} />
             </div>
 

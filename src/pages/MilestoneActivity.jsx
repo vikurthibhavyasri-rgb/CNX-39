@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Wind, Brain, Users, ArrowLeft, CheckCircle2, ChevronRight, AlertCircle, ClipboardList, Smile, Frown, Meh } from 'lucide-react';
+import { toast } from 'sonner';
 
 const BreathingExercise = ({ onComplete }) => {
   const [stage, setStage] = useState('Inhale');
@@ -235,6 +236,8 @@ const AnxietyTest = ({ onComplete }) => {
     );
 };
 
+
+
 export default function MilestoneActivity() {
   const { type } = useParams();
   const navigate = useNavigate();
@@ -254,10 +257,31 @@ export default function MilestoneActivity() {
         body: JSON.stringify({ id: type, data })
       });
       
+      const result = await res.json();
+
       if (res.ok) {
         setCompleted(true);
+        
+        // Show success toast
+        toast.success(`Milestone completed! +${result.xpGained} XP`);
+        
+        if (result.leveledUp) {
+          toast.success(`LEVEL UP! You are now Level ${result.level}`, {
+            description: "Your wellbeing journey is reaching new heights!",
+            duration: 5000,
+          });
+        }
+
+        // Update local user state if available
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+          storedUser.xp = result.xp;
+          storedUser.level = result.level;
+          localStorage.setItem('user', JSON.stringify(storedUser));
+        }
       }
     } catch (error) {
+      toast.error("Failed to save progress. Please try again.");
       console.error("Failed to complete milestone:", error);
     } finally {
       setLoading(false);

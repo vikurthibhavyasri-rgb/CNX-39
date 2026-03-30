@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Moon, Sun, HeartPulse, User, LogOut, ChevronDown } from 'lucide-react';
+import { Toaster } from 'sonner';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -184,7 +185,7 @@ export default function App() {
       </footer>
 
       <Chatbot />
-
+      <Toaster position="top-center" richColors />
     </div>
   );
 }

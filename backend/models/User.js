@@ -37,6 +37,8 @@ const Youth = User.discriminator('youth', new mongoose.Schema({
     completedAt: { type: Date },
     data: { type: Object } // feedback or metrics from activity
   }],
+  xp: { type: Number, default: 0 },
+  level: { type: Number, default: 1 },
   analysis: {
     result: { type: String },
     generatedAt: { type: Date }

@@ -99,8 +99,25 @@ export const updateMilestone = async (req, res) => {
     };
   }
 
+  // Gamification Logic: Award 50 XP
+  const xpGained = 50;
+  user.xp = (user.xp || 0) + xpGained;
+  
+  // Level Up Logic: Level = floor(total_xp / 100) + 1 (simplified)
+  const previousLevel = user.level || 1;
+  const newLevel = Math.floor(user.xp / 100) + 1;
+  const leveledUp = newLevel > previousLevel;
+  user.level = newLevel;
+
   await user.save();
-  res.json({ milestones: user.milestones, analysis: user.analysis });
+  res.json({ 
+    milestones: user.milestones, 
+    analysis: user.analysis, 
+    xp: user.xp, 
+    level: user.level,
+    xpGained,
+    leveledUp
+  });
 };
 
 // Get the analysis result

@@ -1,11 +1,10 @@
+import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import milestoneRoutes from './routes/milestone.js';
-
-dotenv.config();
+import chatRoutes from './routes/chat.js';
 
 const app = express();
 
@@ -16,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/milestones', milestoneRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI)
