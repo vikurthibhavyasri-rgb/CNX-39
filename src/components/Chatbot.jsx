@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { MessageCircle, X, Send, BrainCircuit } from 'lucide-react';
 
 const BotMessage = ({ text }) => (
@@ -22,9 +23,10 @@ const UserMessage = ({ text }) => (
 );
 
 export default function Chatbot() {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { type: 'bot', text: 'Hi there! I am your Svasthya Companion. I can provide grounding exercises, stress-relief tips, or just be here to chat. How are you feeling right now?' }
+    { type: 'bot', text: t('chatbot.greeting', 'Hi there! I am your Svasthya Companion. I can provide grounding exercises, stress-relief tips, or just be here to chat. How are you feeling right now?') }
   ]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
@@ -36,6 +38,11 @@ export default function Chatbot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    // Refresh greeting when language changes
+    setMessages([{ type: 'bot', text: t('chatbot.greeting', 'Hi there! I am your Svasthya Companion. I can provide grounding exercises, stress-relief tips, or just be here to chat. How are you feeling right now?') }]);
+  }, [i18n.language, t]);
 
   useEffect(() => {
     const handleOpenChat = () => setIsOpen(true);
@@ -67,7 +74,11 @@ export default function Chatbot() {
       const res = await fetch('http://localhost:5000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userText, history })
+        body: JSON.stringify({ 
+          message: userText, 
+          history,
+          language: i18n.language // Pass current language
+        })
       });
 
       const data = await res.json();

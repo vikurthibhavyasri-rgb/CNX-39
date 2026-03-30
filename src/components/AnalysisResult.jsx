@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Sparkles, BrainCircuit, Activity, HeartPulse } from 'lucide-react';
 
 export default function AnalysisResult({ analysis }) {
-  if (!analysis || !analysis.result) return null;
+  if (!analysis || (!analysis.result && !analysis.summary)) return null;
 
   return (
     <motion.div
@@ -24,24 +24,24 @@ export default function AnalysisResult({ analysis }) {
         </div>
 
         <p className="text-xl sm:text-2xl font-bold leading-relaxed mb-8 text-primary-50">
-          "{analysis.result}"
+          "{analysis.summary || analysis.result}"
         </p>
 
         <div className="grid sm:grid-cols-3 gap-4">
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-[2rem] border border-white/20">
             <Activity className="text-primary-100 mb-2" size={20} />
             <p className="text-xs font-bold text-primary-200">Consistency</p>
-            <p className="text-lg font-black italic">Excellent</p>
+            <p className="text-lg font-black italic">{analysis.consistency || "Excellent"}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-[2rem] border border-white/20">
             <HeartPulse className="text-primary-100 mb-2" size={20} />
             <p className="text-xs font-bold text-primary-200">Resilience</p>
-            <p className="text-lg font-black italic">Strong</p>
+            <p className="text-lg font-black italic">{analysis.resilience || "Strong"}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-md p-4 rounded-[2rem] border border-white/20">
             <Sparkles className="text-primary-100 mb-2" size={20} />
             <p className="text-xs font-bold text-primary-200">Mindfulness</p>
-            <p className="text-lg font-black italic">Growing</p>
+            <p className="text-lg font-black italic">{analysis.mindfulness || "Growing"}</p>
           </div>
         </div>
 

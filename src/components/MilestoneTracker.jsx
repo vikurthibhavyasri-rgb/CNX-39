@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Circle, Wind, Brain, Users, ClipboardList } from 'lucide-react';
 
 const icons = {
@@ -10,15 +11,17 @@ const icons = {
   anxiety_test: <ClipboardList size={20} />
 };
 
-const labels = {
-  breathing: "Breathing Exercise",
-  meditation: "Mindful Meditation",
-  talking_to_friend: "Talk to a Friend",
-  mood_check: "Daily Mood Check",
-  anxiety_test: "Anxiety Assessment"
-};
-
 export default function MilestoneTracker({ milestones, onSelect }) {
+  const { t } = useTranslation();
+  
+  const labels = {
+    breathing: t('milestones.breathing', 'Breathing Exercise'),
+    meditation: t('milestones.meditation', 'Mindful Meditation'),
+    talking_to_friend: t('milestones.talking_to_friend', 'Talk to a Friend'),
+    mood_check: t('milestones.mood_check', 'Daily Mood Check'),
+    anxiety_test: t('milestones.anxiety_test', 'Anxiety Assessment')
+  };
+
   const required = ['breathing', 'meditation', 'talking_to_friend', 'mood_check', 'anxiety_test'];
   const completedCount = milestones.filter(m => m.completed).length;
   const progressPercentage = (completedCount / required.length) * 100;
@@ -27,8 +30,8 @@ export default function MilestoneTracker({ milestones, onSelect }) {
     <div className="bg-white dark:bg-darkcard p-6 rounded-3xl border border-gray-100 dark:border-darkborder shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Your Wellness Journey</h3>
-          <p className="text-sm text-gray-500">Complete milestones to unlock your mental health analysis.</p>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('milestones.title', 'Your Wellness Journey')}</h3>
+          <p className="text-sm text-gray-500">{t('milestones.subtitle', 'Complete milestones to unlock your mental health analysis.')}</p>
         </div>
         <div className="text-right">
           <span className="text-2xl font-black text-primary-600">{Math.round(progressPercentage)}%</span>
@@ -69,7 +72,7 @@ export default function MilestoneTracker({ milestones, onSelect }) {
                     {labels[id]}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {isCompleted ? 'Completed' : 'Click to start activity'}
+                    {isCompleted ? t('milestones.completed', 'Completed') : t('milestones.start_activity', 'Click to start activity')}
                   </p>
                 </div>
               </div>
