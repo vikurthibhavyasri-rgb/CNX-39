@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply antialiased text-gray-800 bg-slate-50 dark:bg-darkbg dark:text-gray-200 transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-gray-900 dark:text-white transition-colors duration-300;
+  }
+}
+
+/* Custom Utilities for glassmorphism and smooth animations */
+@layer utilities {
+  .glass {
+    @apply bg-white/70 dark:bg-darkcard/70 backdrop-blur-md border border-white/20 dark:border-darkborder/50 shadow-sm transition-colors duration-300;
+  }
+}
